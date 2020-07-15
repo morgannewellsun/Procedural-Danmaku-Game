@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b2dfca88273414eb8bdf8a5f8a81c7, type: 3}
+  m_Name: static
+  m_EditorClassIdentifier: 
+  customRolloffStartDistance: 0
+  customRolloffStartLevel: 0
+  customRolloffEndDistance: 0
+  customRolloffEndLevel: 0
+  reverbZoneMixStartDistance: 0
+  reverbZoneMixStartLevel: 0
+  reverbZoneMixEndDistance: 1
+  reverbZoneMixEndLevel: 0
+  spatialBlendStartDistance: 0
+  spatialBlendStartLevel: 0
+  spatialBlendEndDistance: 1
+  spatialBlendEndLevel: 0
+  spreadStartDistance: 0
+  spreadStartLevel: 0
+  spreadEndDistance: 0
+  spreadEndLevel: 0
