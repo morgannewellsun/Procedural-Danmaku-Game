@@ -7,12 +7,14 @@ public class GameDirector : Singleton<GameDirector>
     public static IAudioSystem audioSystem;
     public static ICameraSystem cameraSystem;
     public static ISpriteAnimationSystem spriteAnimationSystem;
+    public static ISkeletonAnimationSystem skeletonAnimationSystem;
 
     void Awake()
     {
         audioSystem = gameObject.AddComponent<AudioSystem>();
         cameraSystem = gameObject.AddComponent<CameraSystem>();
         spriteAnimationSystem = gameObject.AddComponent<SpriteAnimationSystem>();
+        skeletonAnimationSystem = gameObject.AddComponent<SkeletonAnimationSystem>();
     }
 }
 
