@@ -18,16 +18,20 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
     private List<GameObject> baseObjects = new List<GameObject>();
 
     private List<bool> positionInterpolationActive = new List<bool>();
-    private List<Tuple<AnimationCurve, AnimationCurve>> positionInterpolationCurves = new List<Tuple<AnimationCurve, AnimationCurve>>();
-    private List<PositionInterpolationCurveType> positionInterpolationCurveTypes = new List<PositionInterpolationCurveType>();
+    private List<Tuple<AnimationCurve, AnimationCurve>> positionInterpolationCurves = 
+        new List<Tuple<AnimationCurve, AnimationCurve>>();
+    private List<PositionInterpolationCurveType> positionInterpolationCurveTypes = 
+        new List<PositionInterpolationCurveType>();
     private List<bool> positionInterpolationCurveLoops = new List<bool>();
     private List<float> positionInterpolationCurveDurations = new List<float>();
+    private List<float> positionInterpolationStartTimes = new List<float>();
     private List<float> positionInterpolationEndTimes = new List<float>();
 
     private List<bool> rotationInterpolationActive = new List<bool>();
     private List<AnimationCurve> rotationInterpolationCurves = new List<AnimationCurve>();
     private List<bool> rotationInterpolationCurveLoops = new List<bool>();
     private List<float> rotationInterpolationCurveDurations = new List<float>();
+    private List<float> rotationInterpolationStartTimes = new List<float>();
     private List<float> rotationInterpolationEndTimes = new List<float>();
 
     public void InterpolateLimbAbsoluteRotation(
@@ -39,6 +43,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
         rotationInterpolationCurveLoops[index] = loop;
         float duration = GetLastKeyframeInAnimationCurve(absoluteRotationCurve).time;
         rotationInterpolationCurveDurations[index] = duration;
+        rotationInterpolationStartTimes[index] = Time.time;
         rotationInterpolationEndTimes[index] = Time.time + duration;
     }
 
@@ -52,6 +57,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
         positionInterpolationCurveTypes[index] = PositionInterpolationCurveType.Cartesian;
         positionInterpolationCurveLoops[index] = loop;
         positionInterpolationCurveDurations[index] = duration;
+        positionInterpolationStartTimes[index] = Time.time;
         positionInterpolationEndTimes[index] = Time.time + duration;
     }
 
@@ -65,6 +71,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
         positionInterpolationCurveTypes[index] = PositionInterpolationCurveType.Radial;
         positionInterpolationCurveLoops[index] = loop;
         positionInterpolationCurveDurations[index] = duration;
+        positionInterpolationStartTimes[index] = Time.time;
         positionInterpolationEndTimes[index] = Time.time + duration;
     }
 
@@ -103,7 +110,13 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
             int index = entry.Value;
             if (positionInterpolationActive[index])
             {
-                UpdateLimbObjectPositionInterpolation(entry.Key, index);
+                if (positionInterpolationCurveTypes[index] == PositionInterpolationCurveType.Cartesian)
+                {
+                    UpdateLimbObjectPositionInterpolationCartesian(entry.Key, index);
+                } else //if (positionInterpolationCurveTypes[index] == PositionInterpolationCurveType.Radial)
+                {
+                    UpdateLimbObjectPositionInterpolationRadial(entry.Key, index);
+                }
             }
             if (rotationInterpolationActive[index])
             {
@@ -121,11 +134,11 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
         }
         else if (limbObject == null)
         {
-            throw new Exception("Limb object must not be null or destroyed.");
+            throw new Exception("Added limb object must not be null or destroyed.");
         }
         else if (baseObject == null)
         {
-            throw new Exception("Base object must not be null or destroyed.");
+            throw new Exception("Base object of added limb must not be null or destroyed.");
         }
         else
         {
@@ -146,10 +159,12 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
                 positionInterpolationCurves.Add(null);
                 positionInterpolationCurveTypes.Add(PositionInterpolationCurveType.Cartesian);
                 positionInterpolationCurveLoops.Add(false);
+                positionInterpolationStartTimes.Add(0f);
                 positionInterpolationEndTimes.Add(0f);
                 rotationInterpolationActive.Add(false);
                 rotationInterpolationCurves.Add(null);
                 rotationInterpolationCurveLoops.Add(false);
+                rotationInterpolationStartTimes.Add(0f);
                 rotationInterpolationEndTimes.Add(0f);
             }
             return index;
@@ -191,16 +206,95 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
 
     private void CullDestroyedBaseAndLimbObjects()
     {
-        throw new NotImplementedException();
+        List<GameObject> deletedLimbObjects = new List<GameObject>();
+        List<int> deletedIndicesThisFrame = new List<int>();
+        foreach (KeyValuePair<GameObject, int> entry in limbObjectIndices)
+        {
+            if (entry.Key == null | baseObjects[entry.Value] == null)
+            {
+                deletedLimbObjects.Add(entry.Key);
+                deletedIndicesThisFrame.Add(entry.Value);
+            }
+        }
+        foreach (GameObject deletedLimbObject in deletedLimbObjects)
+        {
+            limbObjectIndices.Remove(deletedLimbObject);
+        }
+        foreach (int deletedIndex in deletedIndicesThisFrame)
+        {
+            deletedIndices.Enqueue(deletedIndex);
+        }
     }
 
-    private void UpdateLimbObjectPositionInterpolation(GameObject limbObject, int index)
+    private void UpdateLimbObjectPositionInterpolationCartesian(GameObject limbObject, int index)
     {
-        throw new NotImplementedException();
+        if (Time.time > positionInterpolationEndTimes[index])
+        {
+            if (positionInterpolationCurveLoops[index])
+            {
+                positionInterpolationStartTimes[index] = Time.time;
+                positionInterpolationEndTimes[index] = Time.time + positionInterpolationCurveDurations[index];
+            }
+            else
+            {
+                positionInterpolationActive[index] = false;
+                return;
+            }
+        }
+        float timeSinceCurveStart = Time.time - positionInterpolationStartTimes[index];
+        float xCurveEvaluated = positionInterpolationCurves[index].Item1.Evaluate(timeSinceCurveStart);
+        float yCurveEvaluated = positionInterpolationCurves[index].Item2.Evaluate(timeSinceCurveStart);
+        Transform baseTransform = baseObjects[index].transform;
+        limbObject.transform.position = new Vector3(
+            baseTransform.position.x + xCurveEvaluated,
+            baseTransform.position.y + yCurveEvaluated,
+            limbObject.transform.position.z);
+    }
+
+    private void UpdateLimbObjectPositionInterpolationRadial(GameObject limbObject, int index)
+    {
+        if (Time.time > positionInterpolationEndTimes[index])
+        {
+            if (positionInterpolationCurveLoops[index])
+            {
+                positionInterpolationStartTimes[index] = Time.time;
+                positionInterpolationEndTimes[index] = Time.time + positionInterpolationCurveDurations[index];
+            }
+            else
+            {
+                positionInterpolationActive[index] = false;
+                return;
+            }
+        }
+        float timeSinceCurveStart = Time.time - positionInterpolationStartTimes[index];
+        float rCurveEvaluated = positionInterpolationCurves[index].Item1.Evaluate(timeSinceCurveStart);
+        float thetaCurveEvaluated = positionInterpolationCurves[index].Item2.Evaluate(timeSinceCurveStart);
+        float xOffset = rCurveEvaluated * Mathf.Cos(thetaCurveEvaluated * Mathf.Deg2Rad);
+        float yOffset = rCurveEvaluated * Mathf.Sin(thetaCurveEvaluated * Mathf.Deg2Rad);
+        Transform baseTransform = baseObjects[index].transform;
+        limbObject.transform.position = new Vector3(
+            baseTransform.position.x + xOffset,
+            baseTransform.position.y + yOffset,
+            limbObject.transform.position.z);
     }
 
     private void UpdateLimbObjectRotationInterpolation(GameObject limbObject, int index)
     {
-        throw new NotImplementedException();
+        if (Time.time > rotationInterpolationEndTimes[index])
+        {
+            if (rotationInterpolationCurveLoops[index])
+            {
+                rotationInterpolationStartTimes[index] = Time.time;
+                rotationInterpolationEndTimes[index] = Time.time + rotationInterpolationCurveDurations[index];
+            }
+            else
+            {
+                rotationInterpolationActive[index] = false;
+                return;
+            }
+        }
+        float timeSinceCurveStart = Time.time - rotationInterpolationStartTimes[index];
+        float rotationInterpolationCurveEvaluated = rotationInterpolationCurves[index].Evaluate(timeSinceCurveStart);
+        limbObject.transform.rotation = Quaternion.Euler(0, 0, rotationInterpolationCurveEvaluated);
     }
 }
