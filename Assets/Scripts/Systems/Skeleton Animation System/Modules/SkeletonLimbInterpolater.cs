@@ -52,7 +52,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
     {
         int index = GetOrAddLimbObjectIndex(limbObject, baseObject: baseObject);
         positionInterpolationActive[index] = true;
-        MatchAnimationCurveDurations(xCurve, yCurve, out float duration);
+        float duration = Mathf.Max(GetLastKeyframeInAnimationCurve(xCurve).time, GetLastKeyframeInAnimationCurve(yCurve).time);
         positionInterpolationCurves[index] = new Tuple<AnimationCurve, AnimationCurve>(xCurve, yCurve);
         positionInterpolationCurveTypes[index] = PositionInterpolationCurveType.Cartesian;
         positionInterpolationCurveLoops[index] = loop;
@@ -66,7 +66,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
     {
         int index = GetOrAddLimbObjectIndex(limbObject, baseObject: baseObject);
         positionInterpolationActive[index] = true;
-        MatchAnimationCurveDurations(rCurve, thetaCurve, out float duration);
+        float duration = Mathf.Max(GetLastKeyframeInAnimationCurve(rCurve).time, GetLastKeyframeInAnimationCurve(thetaCurve).time);
         positionInterpolationCurves[index] = new Tuple<AnimationCurve, AnimationCurve>(rCurve, thetaCurve);
         positionInterpolationCurveTypes[index] = PositionInterpolationCurveType.Radial;
         positionInterpolationCurveLoops[index] = loop;
@@ -182,26 +182,6 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
             }
         }
         return lastFrame;
-    }
-
-    private void MatchAnimationCurveDurations(AnimationCurve curveOne, AnimationCurve curveTwo, out float matchedDuration)
-    {
-        Keyframe curveOneLastKeyframe = GetLastKeyframeInAnimationCurve(curveOne);
-        Keyframe curveTwoLastKeyframe = GetLastKeyframeInAnimationCurve(curveTwo);
-        if (curveOneLastKeyframe.time == curveTwoLastKeyframe.time)
-        {
-            matchedDuration = curveOneLastKeyframe.time;
-        }
-        else if (curveOneLastKeyframe.time > curveTwoLastKeyframe.time)
-        {
-            curveTwo.AddKey(new Keyframe(curveOneLastKeyframe.time, curveTwoLastKeyframe.value));
-            matchedDuration = curveOneLastKeyframe.time;
-        }
-        else //if (curveOneLastKeyframe.time < curveTwoLastKeyframe.time)
-        {
-            curveOne.AddKey(new Keyframe(curveTwoLastKeyframe.time, curveOneLastKeyframe.value));
-            matchedDuration = curveTwoLastKeyframe.time;
-        }
     }
 
     private void CullDestroyedBaseAndLimbObjects()
