@@ -37,7 +37,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
     public void InterpolateLimbAbsoluteRotation(
         GameObject baseObject, GameObject limbObject, AnimationCurve absoluteRotationCurve, bool loop)
     {
-        int index = GetOrAddLimbObjectIndex(limbObject, baseObject: baseObject);
+        int index = GetOrAddLimbObjectIndex(baseObject, limbObject);
         rotationInterpolationActive[index] = true;
         rotationInterpolationCurves[index] = absoluteRotationCurve;
         rotationInterpolationCurveLoops[index] = loop;
@@ -50,7 +50,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
     public void InterpolateLimbRelativePositionCartesian(
         GameObject baseObject, GameObject limbObject, AnimationCurve xCurve, AnimationCurve yCurve, bool loop)
     {
-        int index = GetOrAddLimbObjectIndex(limbObject, baseObject: baseObject);
+        int index = GetOrAddLimbObjectIndex(baseObject, limbObject);
         positionInterpolationActive[index] = true;
         float duration = Mathf.Max(GetLastKeyframeInAnimationCurve(xCurve).time, GetLastKeyframeInAnimationCurve(yCurve).time);
         positionInterpolationCurves[index] = new Tuple<AnimationCurve, AnimationCurve>(xCurve, yCurve);
@@ -64,7 +64,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
     public void InterpolateLimbRelativePositionRadial(
         GameObject baseObject, GameObject limbObject, AnimationCurve rCurve, AnimationCurve thetaCurve, bool loop)
     {
-        int index = GetOrAddLimbObjectIndex(limbObject, baseObject: baseObject);
+        int index = GetOrAddLimbObjectIndex(baseObject, limbObject);
         positionInterpolationActive[index] = true;
         float duration = Mathf.Max(GetLastKeyframeInAnimationCurve(rCurve).time, GetLastKeyframeInAnimationCurve(thetaCurve).time);
         positionInterpolationCurves[index] = new Tuple<AnimationCurve, AnimationCurve>(rCurve, thetaCurve);
@@ -92,13 +92,13 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
 
     public void StopAbsoluteRotationInterpolation(GameObject baseObject, GameObject limbObject)
     {
-        int index = GetOrAddLimbObjectIndex(limbObject);
+        int index = GetOrAddLimbObjectIndex(baseObject, limbObject);
         rotationInterpolationActive[index] = false;
     }
 
     public void StopRelativePositionInterpolation(GameObject baseObject, GameObject limbObject)
     {
-        int index = GetOrAddLimbObjectIndex(limbObject);
+        int index = GetOrAddLimbObjectIndex(baseObject, limbObject);
         positionInterpolationActive[index] = false;
     }
 
@@ -125,7 +125,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
         }
     }
 
-    private int GetOrAddLimbObjectIndex(GameObject limbObject, GameObject baseObject = null)
+    private int GetOrAddLimbObjectIndex(GameObject baseObject, GameObject limbObject)
     {
         int index;
         if (limbObjectIndices.TryGetValue(limbObject, out index))

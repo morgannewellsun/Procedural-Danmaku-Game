@@ -32,13 +32,18 @@ public class TesterScript : MonoBehaviour
                     testObject3 = new GameObject("Test Object 3");
                     break;
                 case 2:
-                    GameDirector.audioSystem.PlayLoop(testObject, "civilization_of_magic", "static", 1);
+                    GameDirector.skeletonAnimationSystem.AttachLimb(testObject, "Test Limb");
                     break;
                 case 3:
-                    GameDirector.audioSystem.StopLoop(testObject, "civilization_of_magic");
+                    GameObject limbObject = GameDirector.skeletonAnimationSystem.GetLimb(testObject, "Test Limb");
+                    GameDirector.spriteAnimationSystem.Add(limbObject, "entities");
+                    GameDirector.spriteAnimationSystem.ApplyAnimation(limbObject, "test_animation");
+                    break;
+                case 4:
+                    GameDirector.skeletonAnimationSystem.SetLimbRelativePosition(testObject, "Test Limb", new Vector2(3, 2));
                     break;
                 default:
-                    Debug.Log("No more lines.");
+                    Debug.Log("No more Lines");
                     break;
             }
         }
