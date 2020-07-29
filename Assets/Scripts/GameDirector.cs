@@ -6,6 +6,7 @@ public class GameDirector : Singleton<GameDirector>
 {
     public static IAudioSystem audioSystem;
     public static ICameraSystem cameraSystem;
+    public static IPlayerSystem playerSystem;
     public static ISpriteAnimationSystem spriteAnimationSystem;
     public static ISkeletonAnimationSystem skeletonAnimationSystem;
 
@@ -13,6 +14,7 @@ public class GameDirector : Singleton<GameDirector>
     {
         audioSystem = gameObject.AddComponent<AudioSystem>();
         cameraSystem = gameObject.AddComponent<CameraSystem>();
+        playerSystem = gameObject.AddComponent<PlayerSystem>();
         spriteAnimationSystem = gameObject.AddComponent<SpriteAnimationSystem>();
         skeletonAnimationSystem = gameObject.AddComponent<SkeletonAnimationSystem>();
     }
