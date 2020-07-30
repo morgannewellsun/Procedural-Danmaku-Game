@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IPlayerSystem
+public interface IPlayerHealthManager
 {
+    int GetCurrentHealth();
     void ApplyDamage(int amount);
-    GameObject GetPlayerBaseObject();
-    Vector2 GetPlayerPosition();
 }
