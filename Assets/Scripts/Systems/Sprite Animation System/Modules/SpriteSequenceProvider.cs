@@ -14,9 +14,6 @@ public class SpriteSequenceProvider : ISpriteSequenceProvider
 
     private Dictionary<string, SpriteSequence> spriteSequenceCache = new Dictionary<string, SpriteSequence>();
 
-    private Dictionary<string, float> cachedTotalDurations = new Dictionary<string, float>();
-    private Dictionary<string, float> defaultTotalDurations = new Dictionary<string, float>();
-
     public void Preload()
     {
         Sprite[] loadedSprites = Resources.LoadAll<Sprite>(resourcesPathToSprites);
@@ -24,33 +21,17 @@ public class SpriteSequenceProvider : ISpriteSequenceProvider
         {
             spriteCache.Add(loadedSprite.name, loadedSprite);
         }
-
         SpriteSequenceSpec[] loadedSpecs = Resources.LoadAll<SpriteSequenceSpec>(resourcesPathToSpecs);
         foreach (SpriteSequenceSpec loadedSpec in loadedSpecs)
         {
             SpriteSequence defaultSequence = CreateDefaultSequenceFromSpec(loadedSpec);
             spriteSequenceCache.Add(loadedSpec.name, defaultSequence);
-
-            float defaultDuration = defaultSequence.durations.Sum();
-            cachedTotalDurations.Add(loadedSpec.name, defaultDuration);
-            defaultTotalDurations.Add(loadedSpec.name, defaultDuration);
         }
     }
 
-    public SpriteSequence GetSequence(string sequenceName, float sequenceDuration = -1)
+    public SpriteSequence GetSequence(string sequenceName)
     {
-        if (sequenceDuration == -1)
-        {
-            sequenceDuration = defaultTotalDurations[sequenceName];
-        }
-        if (cachedTotalDurations[sequenceName] == sequenceDuration)
-        {
-            return spriteSequenceCache[sequenceName];
-        }
-        else
-        {
-            return RescaleCachedSequence(sequenceName, sequenceDuration); ;
-        }
+        return spriteSequenceCache[sequenceName];
     }
 
     private SpriteSequence CreateDefaultSequenceFromSpec(SpriteSequenceSpec sequenceSpec)
@@ -64,17 +45,5 @@ public class SpriteSequenceProvider : ISpriteSequenceProvider
             newDefaultSequence.durations.Add(nextDuration);
         }
         return newDefaultSequence;
-    }
-
-    private SpriteSequence RescaleCachedSequence(string sequenceName, float newTotalDuration)
-    {
-        SpriteSequence cachedSequence = spriteSequenceCache[sequenceName];
-        float oldTotalDuration = cachedTotalDurations[sequenceName];
-        for (int i = 0; i < cachedSequence.sprites.Count; i++)
-        {
-            cachedSequence.durations[i] *= (newTotalDuration / oldTotalDuration);
-        }
-        cachedTotalDurations[sequenceName] = newTotalDuration;
-        return cachedSequence;
     }
 }

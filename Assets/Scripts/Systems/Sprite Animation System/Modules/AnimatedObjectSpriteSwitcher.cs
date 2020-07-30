@@ -9,6 +9,7 @@ public class AnimatedObjectSpriteSwitcher : IAnimatedObjectSpriteSwitcher
     private List<SpriteSequence> animateeSequences = new List<SpriteSequence>();
     private List<int> animateeCurrentSpriteIndices = new List<int>();
     private List<float> animateeNextSpriteStartTimes = new List<float>();
+    private List<float> animateeSpeedMultipliers = new List<float>();
 
     public void Add(GameObject animatee)
     {
@@ -18,15 +19,23 @@ public class AnimatedObjectSpriteSwitcher : IAnimatedObjectSpriteSwitcher
         animateeSequences.Add(null);
         animateeCurrentSpriteIndices.Add(-1);
         animateeNextSpriteStartTimes.Add(-1);
+        animateeSpeedMultipliers.Add(-1);
     }
 
-    public void ApplySequence(GameObject animatee, SpriteSequence sequence)
+    public void ApplySequence(GameObject animatee, SpriteSequence sequence, float speedMultiplier)
     {
         int animateeIndex = animateeIndices[animatee];
         animateeRenderers[animateeIndex].sprite = sequence.sprites[0];
         animateeSequences[animateeIndex] = sequence;
         animateeCurrentSpriteIndices[animateeIndex] = 0;
-        animateeNextSpriteStartTimes[animateeIndex] = Time.time + sequence.durations[0];
+        animateeNextSpriteStartTimes[animateeIndex] = Time.time + (sequence.durations[0] / speedMultiplier);
+        animateeSpeedMultipliers[animateeIndex] = speedMultiplier;
+    }
+
+    public void SetSequenceSpeed(GameObject animatee, float speedMultiplier)
+    {
+        int animateeIndex = animateeIndices[animatee];
+        animateeSpeedMultipliers[animateeIndex] = speedMultiplier;
     }
 
     public void UpdateManaged()
@@ -67,6 +76,7 @@ public class AnimatedObjectSpriteSwitcher : IAnimatedObjectSpriteSwitcher
             animateeSequences.RemoveAt(destroyedAnimateeIndex);
             animateeCurrentSpriteIndices.RemoveAt(destroyedAnimateeIndex);
             animateeNextSpriteStartTimes.RemoveAt(destroyedAnimateeIndex);
+            animateeSpeedMultipliers.RemoveAt(destroyedAnimateeIndex);
         }
     }
 
@@ -85,7 +95,9 @@ public class AnimatedObjectSpriteSwitcher : IAnimatedObjectSpriteSwitcher
                     }
                     animateeRenderers[animateeIndex].sprite = animateeSequences[animateeIndex].sprites[nextSpriteIndex];
                     animateeCurrentSpriteIndices[animateeIndex] = nextSpriteIndex;
-                    animateeNextSpriteStartTimes[animateeIndex] = Time.time + animateeSequences[animateeIndex].durations[nextSpriteIndex];
+                    animateeNextSpriteStartTimes[animateeIndex] = 
+                        Time.time 
+                        + (animateeSequences[animateeIndex].durations[nextSpriteIndex] / animateeSpeedMultipliers[animateeIndex]);
                 }
             }
         }

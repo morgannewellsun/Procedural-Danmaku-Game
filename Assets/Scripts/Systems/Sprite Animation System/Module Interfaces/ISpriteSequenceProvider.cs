@@ -5,5 +5,5 @@ using UnityEngine;
 public interface ISpriteSequenceProvider
 {
     void Preload();
-    SpriteSequence GetSequence(string sequenceName, float sequenceDuration = -1);
+    SpriteSequence GetSequence(string sequenceName);
 }

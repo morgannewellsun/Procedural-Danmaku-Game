@@ -28,19 +28,15 @@ public class TesterScript : MonoBehaviour
             {
                 case 1:
                     testObject = new GameObject("Test Object");
-                    testObject2 = new GameObject("Test Object 2");
-                    testObject3 = new GameObject("Test Object 3");
                     break;
                 case 2:
-                    GameDirector.skeletonAnimationSystem.AttachLimb(testObject, "Test Limb");
+                    GameDirector.spriteAnimationSystem.Add(testObject, "entities");
                     break;
                 case 3:
-                    GameObject limbObject = GameDirector.skeletonAnimationSystem.GetLimb(testObject, "Test Limb");
-                    GameDirector.spriteAnimationSystem.Add(limbObject, "entities");
-                    GameDirector.spriteAnimationSystem.ApplyAnimation(limbObject, "test_animation");
+                    GameDirector.spriteAnimationSystem.ApplyAnimation(testObject, "test_animation");
                     break;
                 case 4:
-                    GameDirector.skeletonAnimationSystem.SetLimbRelativePosition(testObject, "Test Limb", new Vector2(3, 2));
+                    GameDirector.spriteAnimationSystem.SetAnimationSpeed(testObject, 5);
                     break;
                 default:
                     Debug.Log("No more Lines");
