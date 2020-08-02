@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
+public class SkeletonLimbMover : ISkeletonLimbMover
 {
     private enum PositionInterpolationCurveType
     {

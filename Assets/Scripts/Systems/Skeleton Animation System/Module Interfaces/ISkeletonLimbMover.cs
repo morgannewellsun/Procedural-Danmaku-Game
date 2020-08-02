@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ISkeletonLimbInterpolater
+public interface ISkeletonLimbMover
 {
     void Add(GameObject baseObject, GameObject limbObject);
     void InterpolateLimbRelativePositionCartesian(

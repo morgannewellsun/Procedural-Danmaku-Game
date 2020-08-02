@@ -6,12 +6,12 @@ using UnityEngine;
 public class SkeletonAnimationSystem : MonoBehaviour, ISkeletonAnimationSystem
 {
     private ISkeletonLimbManager skeletonLimbManager;
-    private ISkeletonLimbInterpolater skeletonLimbInterpolater;
+    private ISkeletonLimbMover skeletonLimbMover;
 
     void Awake()
     {
         skeletonLimbManager = new SkeletonLimbManager();
-        skeletonLimbInterpolater = new SkeletonLimbInterpolater();
+        skeletonLimbMover = new SkeletonLimbMover();
     }
 
     void Start()
@@ -22,13 +22,13 @@ public class SkeletonAnimationSystem : MonoBehaviour, ISkeletonAnimationSystem
     void Update()
     {
         skeletonLimbManager.UpdateManaged();
-        skeletonLimbInterpolater.UpdateManaged();
+        skeletonLimbMover.UpdateManaged();
     }
 
     public GameObject AttachLimb(GameObject baseObject, string limbLabel)
     {
         GameObject limbObject = skeletonLimbManager.AttachLimb(baseObject, limbLabel);
-        skeletonLimbInterpolater.Add(baseObject, limbObject);
+        skeletonLimbMover.Add(baseObject, limbObject);
         return limbObject;
     }
 
@@ -41,44 +41,44 @@ public class SkeletonAnimationSystem : MonoBehaviour, ISkeletonAnimationSystem
         GameObject baseObject, string limbLabel, AnimationCurve absoluteRotationCurve, bool loop)
     {
         GameObject limbObject = skeletonLimbManager.GetLimb(baseObject, limbLabel);
-        skeletonLimbInterpolater.InterpolateLimbAbsoluteRotation(baseObject, limbObject, absoluteRotationCurve, loop);
+        skeletonLimbMover.InterpolateLimbAbsoluteRotation(baseObject, limbObject, absoluteRotationCurve, loop);
     }
 
     public void InterpolateLimbRelativePositionCartesian(
         GameObject baseObject, string limbLabel, AnimationCurve xCurve, AnimationCurve yCurve, bool loop)
     {
         GameObject limbObject = skeletonLimbManager.GetLimb(baseObject, limbLabel);
-        skeletonLimbInterpolater.InterpolateLimbRelativePositionCartesian(baseObject, limbObject, xCurve, yCurve, loop);
+        skeletonLimbMover.InterpolateLimbRelativePositionCartesian(baseObject, limbObject, xCurve, yCurve, loop);
     }
 
     public void InterpolateLimbRelativePositionRadial(
         GameObject baseObject, string limbLabel, AnimationCurve rCurve, AnimationCurve thetaCurve, bool loop)
     {
         GameObject limbObject = skeletonLimbManager.GetLimb(baseObject, limbLabel);
-        skeletonLimbInterpolater.InterpolateLimbRelativePositionRadial(baseObject, limbObject, rCurve, thetaCurve, loop);
+        skeletonLimbMover.InterpolateLimbRelativePositionRadial(baseObject, limbObject, rCurve, thetaCurve, loop);
     }
 
     public void SetLimbAbsoluteRotation(GameObject baseObject, string limbLabel, float absoluteRotation)
     {
         GameObject limbObject = skeletonLimbManager.GetLimb(baseObject, limbLabel);
-        skeletonLimbInterpolater.SetLimbAbsoluteRotation(baseObject, limbObject, absoluteRotation);
+        skeletonLimbMover.SetLimbAbsoluteRotation(baseObject, limbObject, absoluteRotation);
     }
 
     public void SetLimbRelativePosition(GameObject baseObject, string limbLabel, Vector2 relativePosition)
     {
         GameObject limbObject = skeletonLimbManager.GetLimb(baseObject, limbLabel);
-        skeletonLimbInterpolater.SetLimbRelativePosition(baseObject, limbObject, relativePosition);
+        skeletonLimbMover.SetLimbRelativePosition(baseObject, limbObject, relativePosition);
     }
 
     public void StopAbsoluteRotationInterpolation(GameObject baseObject, string limbLabel)
     {
         GameObject limbObject = skeletonLimbManager.GetLimb(baseObject, limbLabel);
-        skeletonLimbInterpolater.StopAbsoluteRotationInterpolation(baseObject, limbObject);
+        skeletonLimbMover.StopAbsoluteRotationInterpolation(baseObject, limbObject);
     }
 
     public void StopRelativePositionInterpolation(GameObject baseObject, string limbLabel)
     {
         GameObject limbObject = skeletonLimbManager.GetLimb(baseObject, limbLabel);
-        skeletonLimbInterpolater.StopRelativePositionInterpolation(baseObject, limbObject);
+        skeletonLimbMover.StopRelativePositionInterpolation(baseObject, limbObject);
     }
 }
