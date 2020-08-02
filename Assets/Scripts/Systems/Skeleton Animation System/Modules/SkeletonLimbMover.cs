@@ -138,7 +138,6 @@ public class SkeletonLimbMover : ISkeletonLimbMover
 
     private int GetOrAddLimbObjectIndex(GameObject baseObject, GameObject limbObject)
     {
-        Debug.Log("called");
         int index;
         if (limbObjectIndices.TryGetValue(limbObject, out index))
         {
