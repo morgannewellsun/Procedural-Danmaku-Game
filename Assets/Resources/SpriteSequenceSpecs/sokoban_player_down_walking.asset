@@ -10,13 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5201e8ad743787743a3bcb9ac4b05f02, type: 3}
-  m_Name: test_animation
+  m_Name: sokoban_player_down_walking
   m_EditorClassIdentifier: 
   spriteNames:
-  - test_bullet_blue
-  - test_bullet_green
-  - test_bullet_red
+  - sokoban_player_down_walking_0
+  - sokoban_player_down_standing_0
+  - sokoban_player_down_walking_1
+  - sokoban_player_down_standing_0
   defaultDurations:
-  - 1
-  - 1
-  - 1
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25

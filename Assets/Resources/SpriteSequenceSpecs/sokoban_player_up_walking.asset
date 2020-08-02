@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5201e8ad743787743a3bcb9ac4b05f02, type: 3}
+  m_Name: sokoban_player_up_walking
+  m_EditorClassIdentifier: 
+  spriteNames:
+  - sokoban_player_up_walking_0
+  - sokoban_player_up_standing_0
+  - sokoban_player_up_walking_1
+  - sokoban_player_up_standing_0
+  defaultDurations:
+  - 0.25
+  - 0.25
+  - 0.25
+  - 0.25
