@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
 {
@@ -27,12 +27,19 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
     private List<float> positionInterpolationStartTimes = new List<float>();
     private List<float> positionInterpolationEndTimes = new List<float>();
 
+    private List<Vector2> positionFixedOffsets = new List<Vector2>();
+
     private List<bool> rotationInterpolationActive = new List<bool>();
     private List<AnimationCurve> rotationInterpolationCurves = new List<AnimationCurve>();
     private List<bool> rotationInterpolationCurveLoops = new List<bool>();
     private List<float> rotationInterpolationCurveDurations = new List<float>();
     private List<float> rotationInterpolationStartTimes = new List<float>();
     private List<float> rotationInterpolationEndTimes = new List<float>();
+
+    public void Add(GameObject baseObject, GameObject limbObject)
+    {
+        GetOrAddLimbObjectIndex(baseObject, limbObject);
+    }
 
     public void InterpolateLimbAbsoluteRotation(
         GameObject baseObject, GameObject limbObject, AnimationCurve absoluteRotationCurve, bool loop)
@@ -59,6 +66,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
         positionInterpolationCurveDurations[index] = duration;
         positionInterpolationStartTimes[index] = Time.time;
         positionInterpolationEndTimes[index] = Time.time + duration;
+        positionFixedOffsets[index] = Vector2.zero;
     }
 
     public void InterpolateLimbRelativePositionRadial(
@@ -73,6 +81,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
         positionInterpolationCurveDurations[index] = duration;
         positionInterpolationStartTimes[index] = Time.time;
         positionInterpolationEndTimes[index] = Time.time + duration;
+        positionFixedOffsets[index] = Vector2.zero;
     }
 
     public void SetLimbAbsoluteRotation(GameObject baseObject, GameObject limbObject, float absoluteRotation)
@@ -84,10 +93,8 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
     public void SetLimbRelativePosition(GameObject baseObject, GameObject limbObject, Vector2 relativePosition)
     {
         StopRelativePositionInterpolation(baseObject, limbObject);
-        limbObject.transform.position = new Vector3(
-            baseObject.transform.position.x + relativePosition.x,
-            baseObject.transform.position.y + relativePosition.y,
-            limbObject.transform.position.z);
+        int index = GetOrAddLimbObjectIndex(baseObject, limbObject);
+        positionFixedOffsets[index] = relativePosition;
     }
 
     public void StopAbsoluteRotationInterpolation(GameObject baseObject, GameObject limbObject)
@@ -118,6 +125,10 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
                     UpdateLimbObjectPositionInterpolationRadial(entry.Key, index);
                 }
             }
+            else
+            {
+                UpdateLimbObjectPositionUsingFixedOffset(entry.Key, index);
+            }
             if (rotationInterpolationActive[index])
             {
                 UpdateLimbObjectRotationInterpolation(entry.Key, index);
@@ -127,6 +138,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
 
     private int GetOrAddLimbObjectIndex(GameObject baseObject, GameObject limbObject)
     {
+        Debug.Log("called");
         int index;
         if (limbObjectIndices.TryGetValue(limbObject, out index))
         {
@@ -161,6 +173,7 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
                 positionInterpolationCurveLoops.Add(false);
                 positionInterpolationStartTimes.Add(0f);
                 positionInterpolationEndTimes.Add(0f);
+                positionFixedOffsets.Add(Vector2.zero);
                 rotationInterpolationActive.Add(false);
                 rotationInterpolationCurves.Add(null);
                 rotationInterpolationCurveLoops.Add(false);
@@ -276,5 +289,14 @@ public class SkeletonLimbInterpolater : ISkeletonLimbInterpolater
         float timeSinceCurveStart = Time.time - rotationInterpolationStartTimes[index];
         float rotationInterpolationCurveEvaluated = rotationInterpolationCurves[index].Evaluate(timeSinceCurveStart);
         limbObject.transform.rotation = Quaternion.Euler(0, 0, rotationInterpolationCurveEvaluated);
+    }
+
+    private void UpdateLimbObjectPositionUsingFixedOffset(GameObject limbObject, int index)
+    {
+        Transform baseTransform = baseObjects[index].transform;
+        limbObject.transform.position = new Vector3(
+            baseTransform.position.x + positionFixedOffsets[index].x,
+            baseTransform.position.y + positionFixedOffsets[index].y,
+            limbObject.transform.position.z);
     }
 }
