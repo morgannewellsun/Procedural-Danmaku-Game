@@ -18,7 +18,7 @@ public class PlayerSystem : MonoBehaviour, IPlayerSystem
 
     void Start()
     {
-        
+        playerMovementManager.CreateLimbObject();
     }
 
     void Update()
@@ -41,5 +41,10 @@ public class PlayerSystem : MonoBehaviour, IPlayerSystem
         return new Vector2(
             playerBaseObject.transform.position.x,
             playerBaseObject.transform.position.y);
+    }
+
+    public int GetPlayerHealth()
+    {
+        return playerHealthManager.GetCurrentHealth();
     }
 }

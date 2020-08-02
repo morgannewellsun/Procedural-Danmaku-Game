@@ -7,4 +7,5 @@ public interface IPlayerSystem
     void ApplyDamage(int amount);
     GameObject GetPlayerBaseObject();
     Vector2 GetPlayerPosition();
+    int GetPlayerHealth();
 }
