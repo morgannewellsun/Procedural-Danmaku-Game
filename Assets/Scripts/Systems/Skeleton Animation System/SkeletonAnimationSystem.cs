@@ -27,7 +27,9 @@ public class SkeletonAnimationSystem : MonoBehaviour, ISkeletonAnimationSystem
 
     public GameObject AttachLimb(GameObject baseObject, string limbLabel)
     {
-        return skeletonLimbManager.AttachLimb(baseObject, limbLabel);
+        GameObject limbObject = skeletonLimbManager.AttachLimb(baseObject, limbLabel);
+        skeletonLimbInterpolater.Add(baseObject, limbObject);
+        return limbObject;
     }
 
     public GameObject GetLimb(GameObject baseObject, string limbLabel)

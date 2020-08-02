@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface ISkeletonLimbInterpolater
 {
+    void Add(GameObject baseObject, GameObject limbObject);
     void InterpolateLimbRelativePositionCartesian(
         GameObject baseObject, GameObject limbObject, AnimationCurve xCurve, AnimationCurve yCurve, bool loop);
     void InterpolateLimbRelativePositionRadial(
