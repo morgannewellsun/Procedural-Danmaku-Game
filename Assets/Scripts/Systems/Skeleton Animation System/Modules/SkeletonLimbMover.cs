@@ -139,13 +139,13 @@ public class SkeletonLimbMover : ISkeletonLimbMover
     private int GetOrAddLimbObjectIndex(GameObject baseObject, GameObject limbObject)
     {
         int index;
-        if (limbObjectIndices.TryGetValue(limbObject, out index))
-        {
-            return index;
-        }
-        else if (limbObject == null)
+        if (limbObject == null)
         {
             throw new Exception("Added limb object must not be null or destroyed.");
+        }
+        else if (limbObjectIndices.TryGetValue(limbObject, out index))
+        {
+            return index;
         }
         else if (baseObject == null)
         {
